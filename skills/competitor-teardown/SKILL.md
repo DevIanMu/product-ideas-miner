@@ -106,7 +106,8 @@ default_model = "ark/deepseek-v3"
 
 ### 判读与聚类（留在主会话/贵模型做）
 - 主题聚类：主题 | 出现次数 | 代表原话（英文原文+评分+日期）。原话必须页面实读，禁止编造
-- 跨竞品横向：按出现家数排序；特别注意：客服失联、隐性收费/续费偷袭、资金问题、文书质量/合规缺陷、rigid 逼购
+- 跨竞品横向：按出现家数排序；特别注意：客服失联、隐性收费/续费偷袭、资金问题、文书质量/合规缺陷、rigid 逼购、**集成与同步缺失（手工录入 / 不能对接外部系统 / 反复连不上）**
+- **"集成与同步缺失"是必查主题，不是可选项**：它是第六类信号"系统间搬运"在差评侧的主要载体，几乎每场竞品拆解都会出现（实测：房东方向 Turbotenant "Cannot integrate with outside leasing software"、Stessa "download the CSV and compare it to my bank CSV, then enter the transactions manually"、TenantCloud 银行账户反复连不上）。**聚类时单列成主题，不要并进笼统的"记账/报告弱"**——并要求代表原话带出涉及的软件名与频率（差评里常写 "every month"），否则这条证据到 P3/P5 就废了
 - 三条判读纪律：①差评盲区≠需求已满足（功能太新还没积累抱怨）②gig/供给数量≠需求 ③资金类恐怖故事全部来自碰钱的产品——文书工具站天然免疫该类别
 - 单条高价值证据单独记录（如竞品五星好评自证"某功能 the one thing it's been missing"=窗口期证据）
 

@@ -9,7 +9,7 @@ description: Use when mining Reddit for user pain points to validate a product o
 
 Reddit 用来找**痛点**不是找点子。原子证据单位是 **receipt：一条可溯源的用户原话（原话 + 链接 + 社区 + 用户名）**。任何结论必须能指回 receipts；收集不到 3 条以上独立 receipts 的痛点不算候选。
 
-## 五类信号与候选门槛
+## 六类信号与候选门槛
 
 | 信号 | 价值 |
 |---|---|
@@ -18,9 +18,21 @@ Reddit 用来找**痛点**不是找点子。原子证据单位是 **receipt：�
 | 求助帖（"有没有工具能…"） | 即时明确需求 |
 | 已有工具的吐槽 | 竞品验证市场 + 空隙 |
 | 购买前语言（best X for Y / X vs Y / alternative to） | 接近付费 + 天然 SEO 选题 |
+| **系统间搬运**（manually enter / doesn't sync / export to excel / copy and paste / double entry / disconnect） | 两个既有系统之间手工搬数据 = B2B 高客单、低流失；**但无搜索需求，只能触达获客** |
 
 反面信号：纯幻想帖、单帖无共鸣、"我做了个工具"晒帖（是供给不是需求）。
 **候选门槛**：反复提及 + 手工方案 + 吐槽竞品，三条至少占两条。
+
+### receipts 字段（六类通用；"系统间搬运"两条必填）
+
+一条 receipt = 原话 + 链接 + 社区 + 用户名。字段：链接、sub、日期、信号类型、一句话痛点、原话、共鸣数、付费线索。
+
+**信号类型 = 系统间搬运时，额外必填**：
+
+- `软件栈`：涉及的 A 软件 / B 软件（多对一就全记，如 "Applied AMS → Excel"、"Jobber → QuickBooks"）
+- `搬运频率`：daily / weekly / monthly / once
+
+缺这两项，后面判不出它是不是 glue（也无法算 LTV 与定价）。实测教训：某条"每月手工搬运多家保险公司佣金 CSV 到 Excel"的 receipt 只记成"手工方案"，结果整个方向把它归类成"数据锁死=风险"，而它其实是机会簇。
 
 ## 去哪挖
 
@@ -30,7 +42,15 @@ Reddit 用来找**痛点**不是找点子。原子证据单位是 **receipt：�
 
 ## 采集方法
 
-搜索句式库：`is there a tool`、`how do you handle/track`、`drowning in spreadsheets`、`alternative to`、`X vs Y`、`drives me crazy`。Google 用 `site:reddit.com/r/{sub} "句式"`。
+搜索句式库（五组，别只用前两组）：
+
+- 手工/抱怨：`drowning in spreadsheets`、`drives me crazy`、`by hand`
+- 求助：`is there a tool`、`how do you handle/track`
+- 购买前：`alternative to`、`X vs Y`、`worth it`
+- **搬运（第六类信号专用）**：`manually enter`、`manual entry`、`re-type`、`doesn't sync`、`won't sync`、`don't integrate`、`doesn't talk to`、`there is a disconnect`、`export to excel`、`download the CSV`、`copy and paste`、`double entry`；组合式更准——手动词 × 频率词（`"every month" "copy and paste"`、`"daily" "manually"`、`"every week" "export"`）
+- **别人正在做的调研帖（免费 G0）**：`eats up the most time`、`what takes the most time`、`admin time-sink`、`busywork "not actual"`、`how painful ... really`
+
+Google 用 `site:reddit.com/r/{sub} "句式"`。已有语料批量回扫用 `python scripts/glue_scan.py`。
 
 抓取通道与代码片段见 [fetch-snippets.md](fetch-snippets.md)：列表用 `top.json`/`search.json`，**评论线程必须走 old.reddit.com**（新站 permalink `.json` 已失效）。每帖记：链接、sub、日期、信号类型、一句话痛点、原话、共鸣数、付费线索。
 
@@ -72,6 +92,12 @@ default_model = "<便宜模型别名>"          # 如 Ark 上的 DeepSeek Flash�
 | 竞品空隙 | ×2 | 现有工具被骂难用/缺功能？ |
 
 **判定**：总分 **≥ 60** 且 频率+付费意愿两项得分率 **≥ 60%**（即 (频率×3+付费意愿×3) ÷ 30 ≥ 0.6）→ 深挖；50-59 观察；<50 淘汰。历史报告若用未加权 /30 分制，直接看得分率即可换算（24/30 = 80% ≈ 80 分）。
+
+**⚠️ "频率"维度的例外（2026-10-15 补）**：问法"多少独立帖/评论提到"隐含假设了"痛点越痛点赞越多"。**这条对系统间搬运类信号不成立**——没人会给"我每月手工搬 5 家公司的 CSV"点赞。实测：一条 15 年经营 / 5 员工 / $2.75M 保费 / 每月搬运的 glue receipts，相关帖仅 10↑/8↑，被整条判成"弱信号"搁置。搬运型信号的强度看**业务规模（营收/员工/客户数）+ 发生频率**，不看共鸣数；不要把"共鸣低"当成否决理由。
+
+**⚠️ 记分卡回答"是不是真痛点"，不回答"是什么生意"**：形态（获客通道：搜索型 vs 触达型 · 事件型 vs 业务流型）与定价锚是**并列的独立判断**，见 `demand-mining-pipeline` 的 P3 渠道分叉与 P5 三维。高分痛点也可能落在你的获客能力之外。
+
+**B2B/经营者客群定价锚**：`月费 ≈ 客户时薪 × 每天省下的小时数 × 20 × 10-20%`（如 $100/h × 1h × 20 × 15% ≈ $300/月），并用 Fiverr/Upwork 人力价锚交叉验证（数量级应接近）。
 
 ## 付费意愿：六级证据（从弱到强）
 
