@@ -52,6 +52,8 @@ Reddit 用来找**痛点**不是找点子。原子证据单位是 **receipt：�
 
 Google 用 `site:reddit.com/r/{sub} "句式"`。已有语料批量回扫用 `python scripts/glue_scan.py`。
 
+**⚠️ 搜索词先小样本验义，再全量搜**（2026-10-16 补）：**同一个词在不同社区指不同的东西，搜错词 = 整簇漏掉，而且不会报错**。实例：方向 F 专门跑了一轮 `commission` 搜索（25 条），结果全是**薪酬话题**（"how much do brokers make"、"am I underpaid"、"is this a fair compensation plan"）——"commission" 在保险社区指"我能挣多少"，不指"对账流程"；真正捞到搬运痛点的是 `spreadsheet-excel` 那一轮。**做法**：先搜 5-10 条看返回的标题像不像那个意思，不对就换词（换成"用户描述动作"的词：spreadsheet / excel / download / statement / manual，而不是"行业术语"）。
+
 抓取通道与代码片段见 [fetch-snippets.md](fetch-snippets.md)：列表用 `top.json`/`search.json`，**评论线程必须走 old.reddit.com**（新站 permalink `.json` 已失效）。每帖记：链接、sub、日期、信号类型、一句话痛点、原话、共鸣数、付费线索。
 
 ## 成本分层派发（采集 vs 判读）
